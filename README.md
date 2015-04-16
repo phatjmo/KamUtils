@@ -29,10 +29,10 @@ The file “cfgDict.json” belongs in the same folder as the script. The file i
 
 ```javascript
 {
-"host": "lva1bkam00",		//MySQL Host (string)
+"host": "localhost",		//MySQL Host (string)
 "db": "kamailio",		    //Database name (string)
 "user": "kamailio"		  //Database user (with R/W access) (string)
-"passwd": "kmosr521",	  //Database password (string)
+"passwd": "kamailio",	  //Database password (string)
 "gwList": [99, 100],		//List of gateway IDs from lcr_gw for distribution (array)
 }
 ```

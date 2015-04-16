@@ -1,14 +1,15 @@
 # KamUtils
+
 Scripts for facilitating and automating Kamailio management.
----
+
 ## LCR Import Utility
 
-Script Name: lcrstuffer.py
-Command: ./lcrstuffer.py <NUMBERFILE> <ACTION>
-Requires: Python 2.6+
-Modules: sys, MySQLdb (MySQL-python via pip), ast, json, sys.argv, os.path, os.stat
-Dependencies: python-dev, libmysqlclient-dev (Debian)
-Additional Files: cfgDict.json - see docs below
+**Script Name:** lcrstuffer.py
+**Command:** ./lcrstuffer.py <NUMBERFILE> <ACTION>
+**Requires:** Python 2.6+
+**Modules:** sys, MySQLdb (MySQL-python via pip), ast, json, sys.argv, os.path, os.stat
+**Dependencies:** python-dev, libmysqlclient-dev (Debian)
+**Additional Files:** cfgDict.json - see docs below
 
 **Step 1:** Install MySQL and python dev dependencies:
 
@@ -47,20 +48,20 @@ The number file is a plain text file with one phone number match per line, witho
 
 Action Descriptions:
 
-**Import -** Create new lcr_rule entries for each number listed and then create a matching lcr_rule_target entry for each number to each gateway listed in cfgDict.gwList. Default import behavior leaves lcr_rule.enabled = True.
+**Import -** Create new *lcr_rule entries* for each number listed and then create a matching *lcr_rule_target* entry for each number to each gateway listed in *cfgDict.gwList*. Default import behavior leaves *lcr_rule.enabled* = **True**.
 
-**Remove -** Delete all lcr_rule_target entries and all lcr_rule entries that match the numbers in the provided list file.
+**Remove -** Delete all *lcr_rule_target* entries and all *lcr_rule* entries that match the numbers in the provided list file.
 
-**Enable -** Set lcr_rule.enabled = True for all numbers in the provided list file.
+**Enable -** Set *lcr_rule.enabled* = **True** for all numbers in the provided list file.
 
-**Disable -** Set lcr_rule.enabled = False for all numbers in the provided list file.
+**Disable -** Set *lcr_rule.enabled* = **False** for all numbers in the provided list file.
 
 
 
 
 **Note:** 
 
-None of the above actions will impact the running Kamailio instance until lcr.reload has been run via kamcmd:
+None of the above actions will impact the running Kamailio instance until *lcr.reload* has been run via kamcmd:
 
 ```
 sudo kamcmd lcr.reload

@@ -4,12 +4,12 @@ Scripts for facilitating and automating Kamailio management.
 
 ## LCR Import Utility
 
-   **Script Name:** lcrstuffer.py
-   **Command:** ./lcrstuffer.py <NUMBERFILE> <ACTION>
-   **Requires:** Python 2.6+
-   **Modules:** sys, MySQLdb (MySQL-python via pip), ast, json, sys.argv, os.path, os.stat
-   **Dependencies:** python-dev, libmysqlclient-dev (Debian)
-   **Additional Files:** cfgDict.json - see docs below
+   **Script Name:** lcrstuffer.py  
+   **Command:** ./lcrstuffer.py <NUMBERFILE> <ACTION>  
+   **Requires:** Python 2.6+  
+   **Modules:** sys, MySQLdb (MySQL-python via pip), ast, json, sys.argv, os.path, os.stat  
+   **Dependencies:** python-dev, libmysqlclient-dev (Debian)  
+   **Additional Files:** cfgDict.json - see docs below  
 
 **Step 1:** Install MySQL and python dev dependencies:
 

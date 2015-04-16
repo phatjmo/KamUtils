@@ -24,7 +24,8 @@ def arguments():
 def lcrImport():
     numberFile, action = arguments()
     if not path.exists(numberFile) or stat(numberFile).st_size == 0:
-        print "Specified file does not exist or is empty, please check filename and try again!"
+        print """Specified file does not exist or is empty,
+please check filename and try again!"""
         exit(1)
     cfgDict = {}
     if path.exists('cfgDict.json'):
@@ -61,8 +62,14 @@ def lcrImport():
                 print "Line is empty... what gives? Skipping..."
                 continue
             print "Figuring out what to do with {0}...".format(number)
-            if action == 'import':
+            if action.lower() == 'import':
                 print "Importing {0}".format(number)
+                exists = c.execute("""SELECT id FROM lcr_rule
+                                 WHERE prefix=%s""", [number])
+                if exists > 0:
+                    print """{0} already exists in the lcr_rule table.
+Skipping to prevent duplicate routes.""".format(number)
+                    continue
                 c.execute("""INSERT INTO lcr_rule (lcr_id, prefix, stopper, enabled)
                          VALUES (1,%s,1,1)""", [number])
                 c.execute("SELECT id FROM lcr_rule WHERE prefix=%s", [number])
@@ -81,19 +88,26 @@ def lcrImport():
                         VALUES (1,%s,%s,0,1)""", [int(ruleID), int(gw)])
                 print "{0} has been imported.".format(number)
 
-            elif action == 'remove':
-                c.execute("""DELETE FROM lcr_rule_target WHERE rule_id IN (
+            elif action.lower() == 'remove':
+                r = c.execute("""DELETE FROM lcr_rule_target WHERE rule_id IN (
                     SELECT id FROM lcr_rule WHERE prefix=%s)""", [number])
-                c.execute("DELETE FROM lcr_rule WHERE prefix=%s", [number])
+                if r > 0:
+                    print "{0} rule target(s) deleted for {1}.".format(
+                        r, number)
+                else:
+                    print "There were no rule targets for {0}".format(number)
+
+                r = c.execute("DELETE FROM lcr_rule WHERE prefix=%s", [number])
+                if r > 0:
+                    print "{0} rule(s) deleted for {1}.".format(r, number)
+                else:
+                    print "There were no rules for {0}".format(number)
+
                 print "{0} has been removed.".format(number)
-            elif action == 'enable':
-                c.execute("""UPDATE lcr_rule SET enabled=1
-                     WHERE prefix=%s""", [number])
-                print "{0} has been enabled.".format(number)
-            elif action == 'disable':
-                c.execute("""UPDATE lcr_rule SET enabled=0
-                     WHERE prefix=%s""", [number])
-                print "{0} has been disabled.".format(number)
+            elif action.lower() == 'enable':
+                ruleState(number, 1, 'en', c)
+            elif action.lower() == 'disable':
+                ruleState(number, 0, 'dis', c)
             else:
                 print """You did not specify a valid action for this list.\n
                     Valid actions are: import, remove, enable, disable."""
@@ -104,6 +118,20 @@ def lcrImport():
         db.close()
         print "Action: {0} for file: {1} has been completed!".format(
             action, numberFile)
+
+
+def ruleState(number, state, prefix, cursor):
+    r = cursor.execute("""UPDATE lcr_rule SET enabled=%s
+                WHERE prefix=%s""", [state, number])
+    if r > 0:
+        print "{0} rule(s) {1}abled for {2}.".format(r, prefix, number)
+    else:
+        r = cursor.execute("SELECT id FROM lcr_rule WHERE prefix=%s", [number])
+        if r > 0:
+            print "Rule for {0} was already {1}abled.".format(number, prefix)
+        else:
+            print "Rule for {0} does not exist, nothing to do.".format(number)
+    return 1
 
 
 def cfgParams():

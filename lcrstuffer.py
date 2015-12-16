@@ -13,33 +13,39 @@ __author__ = 'JustinZimmer'
 
 
 def arguments():
-    if not len(argv[1:]) == 2:
+    if len(argv[1:]) < 2 or len(argv[1:]) > 3:
         print "Incorrect arguments.\n\nUsage:"
-        "\n\t{0} NUMBERFILE ACTION\n".format(path.basename(__file__))
+        "\n\t{0} NUMBERFILE ACTION (CONFIG)\n".format(path.basename(__file__))
         exit(1)
+    elif len(argv[1:]) == 2:
+        arguments = [argv[1], argv[2], 'cfgDict.json']
+        print arguments
+        return arguments
     else:
-        return argv[1:]
+        arguments = [argv[1], argv[2], argv[3]]
+        print arguments
+        return arguments
 
 
 def lcrImport():
-    numberFile, action = arguments()
+    numberFile, action, configfile = arguments()
     if not path.exists(numberFile) or stat(numberFile).st_size == 0:
         print """Specified file does not exist or is empty,
 please check filename and try again!"""
         exit(1)
     cfgDict = {}
-    if path.exists('cfgDict.json'):
+    if path.exists(configfile):
         try:
-            cfgDict = json.load(open('cfgDict.json'))
+            cfgDict = json.load(open(configfile))
         except:
-            print "cfgDict.json is invalid!\n"
+            print "{0} is invalid!\n".format(configfile)
             exit(1)
     else:
-        makeNew = raw_input("""You are missing the necessary parameter file: cfgdict.json.\n
+        makeNew = raw_input("""You are missing the necessary parameter file: {0}.\n
             Would you like to create a new one and manually enter parameters?
-            (Y/N): """)
+            (Y/N): """.format(configfile))
         if makeNew.strip()[0:1].upper() == 'Y':
-            cfgDict = cfgParams()
+            cfgDict = cfgParams(configfile)
         else:
             print "Oh well, I tried..."
             exit(1)
@@ -108,6 +114,8 @@ Skipping to prevent duplicate routes.""".format(number)
                 ruleState(number, 1, 'en', c)
             elif action.lower() == 'disable':
                 ruleState(number, 0, 'dis', c)
+            elif action.lower() == 'test':
+                print "TEST!!! - Config File: {0}, Number: {1}, GW List: {2}".format(number, configfile, cfgDict['gwList'])
             else:
                 print """You did not specify a valid action for this list.\n
                     Valid actions are: import, remove, enable, disable."""
@@ -134,7 +142,7 @@ def ruleState(number, state, prefix, cursor):
     return 1
 
 
-def cfgParams():
+def cfgParams(filename):
     cfgDict = {}
     cfgDict['host'] = raw_input('Enter your kamailio DB host: ')
     cfgDict['user'] = raw_input('Enter your kamailio DB user: ')
@@ -142,7 +150,7 @@ def cfgParams():
     cfgDict['db'] = raw_input('Enter your kamailio DB name: ')
     strGWList = raw_input('Enter your LCR GW ID list (comma seperated): ')
     cfgDict['gwList'] = ast.literal_eval("({0})".format(strGWList))
-    json.dump(cfgDict, open('cfgDict.json', 'w'))
+    json.dump(cfgDict, open(filename, 'w'))
     return cfgDict
 
 lcrImport()
